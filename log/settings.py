@@ -17,7 +17,7 @@ else:
 LOGCONFIG={
     'name': 'crawl',
     'debug': Log_Debug,
-    'log_path': 'E:/LazyCrawling/logs/{}.log'.format(os.path.split(name)[1]),
+    'log_path': '/root/MyMessageServer/logs/{}.log'.format(os.path.split(name)[1]),
 }
 
 path_log = LOGCONFIG["log_path"]
