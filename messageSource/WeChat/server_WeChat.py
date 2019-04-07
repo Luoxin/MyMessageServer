@@ -31,6 +31,10 @@ NewFriend = '''Nice to meet you!{}'''.format(LITTLETAIL)
 Ignore_zai = '''不在，有事说事，我会把消息推送给小主人的。{}'''.format(LITTLETAIL)
 
 # 爱你
+Love_you = '''我也爱你(๑′ᴗ‵๑)Ｉ Lᵒᵛᵉᵧₒᵤ❤，超爱你（づ￣3￣）づ╭❤～'''
+
+# 喜欢你
+Like_you = '''❤我也超级超级超级喜欢你❤'''
 
 # 时间戳转换为时间
 def ts_to_datatime(ts):
@@ -57,8 +61,37 @@ def text_reply(msg):
             messgae = msg.text
             if messgae in ["在", "在不在", "在？", "在不在？", "在吗", "在吗？", "在嘛", "在么", "在嘛?", "在么?"]:
                 msg.user.send(Ignore_zai)
-            elif ("爱你" in messgae) or ("喜欢你" in messgae):
-                msg.user.send(Ignore_zai)
+            elif "爱你" in messgae:
+                msg.user.send(Love_you)
+                messgae = {
+                    "type": "message",
+                    'level': 'private',
+                    "info": {
+                        "告白来源": "WeChat",
+                        "昵称": msg.user["NickName"].replace("\"", "\\\"").replace("\\", "\\\\").replace("\'", "\\\'"),
+                        "备注": msg.user["RemarkName"],
+                        "消息": msg.text,
+                        "Time": msg["CreateTime"]
+                    }
+                }
+                send_messagr(messgae)
+                logger.info("收到 {} 的告白".format(msg.user["RemarkName"]))
+
+            elif "喜欢你" in messgae:
+                msg.user.send(Like_you)
+                messgae = {
+                    "type": "message",
+                    'level': 'private',
+                    "info": {
+                        "告白来源": "WeChat",
+                        "昵称": msg.user["NickName"].replace("\"", "\\\"").replace("\\", "\\\\").replace("\'", "\\\'"),
+                        "备注": msg.user["RemarkName"],
+                        "消息": msg.text,
+                        "Time": msg["CreateTime"]
+                    }
+                }
+                send_messagr(messgae)
+                logger.info("收到 {} 的告白".format(msg.user["RemarkName"]))
             else:
                 messgae = {
                     "type": "message",
