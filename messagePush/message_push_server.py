@@ -33,31 +33,37 @@ def send_message_to_public(message):  # 给所有的公用订阅推送消息
 	for client in PublicList:
 		server.send_message(client, json.dumps(message))
 
-def send_message():  # 推送消息
+def send_message(level='public'):  # 推送消息
 
-	if PublicList.__len__() > 0 or ProtecteList.__len__() > 0 or PrivateList.__len__() > 0:   # 如果存在公用订阅的客户端，则往公用订阅消息中推送信息
-		if PublicMessage.__len__() > 0 or PrivateMessage.__len__() > 0 or ProtecteMessage.__len__() > 0:  # 如果存在公用订阅的客户端，则往公用订阅消息中推送信息
-			while PublicMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
-				message = PublicMessage.pop(0)
-				send_message_to_private(message)
-				send_message_to_protecte(message)
-				send_message_to_public(message)
+	if level == 'private':
+		if PrivateList.__len__() > 0 :  # 如果存在私人的客户端，则往私人消息中推送信息
+			if PrivateMessage.__len__() > 0:  # 如果存在私人的消息队列
+				while PrivateMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
+					message = PrivateMessage.pop(0)
+					send_message_to_private(message)
+
+	elif level == 'protecte':
+		if ProtecteList.__len__() > 0 or PrivateList.__len__() > 0:   # 如果存在朋友的客户端，则往朋友消息中推送信息
+			if ProtecteMessage.__len__() > 0 or PrivateMessage.__len__() > 0:  # 如果存在朋友的客户端，则往朋友消息中推送信息
+				while ProtecteMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
+					message = ProtecteMessage.pop(0)
+					send_message_to_private(message)
+					send_message_to_protecte(message)
+
+	elif level == 'public':
+		if PublicList.__len__() > 0 or ProtecteList.__len__() > 0 or PrivateList.__len__() > 0:   # 如果存在公用订阅的客户端，则往公用订阅消息中推送信息
+			if PublicMessage.__len__() > 0 or PrivateMessage.__len__() > 0 or ProtecteMessage.__len__() > 0:  # 如果存在公用订阅的客户端，则往公用订阅消息中推送信息
+				while PublicMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
+					message = PublicMessage.pop(0)
+					send_message_to_private(message)
+					send_message_to_protecte(message)
+					send_message_to_public(message)
 
 
 
-	if ProtecteList.__len__() > 0 or PrivateList.__len__() > 0:   # 如果存在朋友的客户端，则往朋友消息中推送信息
-		if ProtecteMessage.__len__() > 0 or PrivateMessage.__len__() > 0:  # 如果存在朋友的客户端，则往朋友消息中推送信息
-			while ProtecteMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
-				message = ProtecteMessage.pop(0)
-				send_message_to_private(message)
-				send_message_to_protecte(message)
 
 
-	if PrivateList.__len__() > 0 :  # 如果存在私人的客户端，则往私人消息中推送信息
-		if PrivateMessage.__len__() > 0:  # 如果存在私人的消息队列
-			while PrivateMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
-				message = PrivateMessage.pop(0)
-				send_message_to_private(message)
+
 
 
 # websocket相关代码
@@ -75,7 +81,7 @@ def message_received(client, server, message):  # 接受消息
 		message = json.loads(message)
 		if message["type"] == "message":  # 新的消息
 			eval(string.capwords(message['level']) + 'Message').append(message["info"])  # 将消息发送给响应的权限队列
-			send_message()
+			send_message(message['level'])
 
 		elif message["type"] == "subscription":  # 新的用户订阅
 			'''
@@ -89,14 +95,14 @@ def message_received(client, server, message):  # 接受消息
 					PrivateList.append(client)
 					logger.info("加入新的私人推送客户端(id: {})".format(client['id']))
 					server.send_message(client, json.dumps({"message": "连接建立成功"}))
-					send_message()  # 推送历史消息
+					send_message('private')  # 推送历史消息
 
 			elif message['info']['username'] == 'protecte':  # 拥有部分权限的订阅用户
 				if message['info']['password'] == PUBLICID:
 					ProtecteList.append(client)
 					logger.info("加入新的朋友推送客户端(id: {})".format(client['id']))
 					server.send_message(client, json.dumps({"message": "连接建立成功"}))
-					send_message()  # 推送历史消息
+					send_message('protecte')  # 推送历史消息
 
 			else:
 				PublicList.append(client)

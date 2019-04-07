@@ -1,12 +1,14 @@
-'''
+import sys
+sys.path.append('../')
+sys.path.append('../../')
 
-'''
+from log import logger
+
 import urllib.request
 from contextlib import closing
 import requests
 import random
 import json
-# from getproxy import GetProxy
 
 class DownLoaderHtml:
     '''
@@ -113,7 +115,6 @@ class DownLoaderHtml:
             # 我们判断如果不是200就返回None 否则就返回数据就
             if response.getcode() != 200:
                 return None
-
             # 从响应中读取页面数据并返回
             try:
                 return response.read().decode('utf-8')
