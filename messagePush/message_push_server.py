@@ -9,6 +9,13 @@ import json
 import string
 
 
+
+
+
+
+
+# 消息相关的代码
+
 PrivateList = []  # 私人用户的列表
 PrivateMessage = []
 
@@ -22,16 +29,34 @@ verifiedList = []  # 公共订阅列表
 messsageList = []
 
 def send_message_to_private(message):  # 给所有的私人用户推送消息
+	broken = []
 	for client in PrivateList:
-		server.send_message(client, json.dumps(message))
+		try:
+			server.send_message(client, json.dumps(message))
+		except:
+			broken.append(client)
+	for client in broken:
+		PrivateList.remove(client)
 
 def send_message_to_protecte(message):  # 给所有的朋友推送消息
+	broken = []
 	for client in ProtecteList:
-		server.send_message(client, json.dumps(message))
+		try:
+			server.send_message(client, json.dumps(message))
+		except:
+			broken.append(client)
+	for client in broken:
+		ProtecteList.remove(client)
 
 def send_message_to_public(message):  # 给所有的公用订阅推送消息
+	broken = []
 	for client in PublicList:
-		server.send_message(client, json.dumps(message))
+		try:
+			server.send_message(client, json.dumps(message))
+		except:
+			broken.append(client)
+	for client in broken:
+		PublicList.remove(client)
 
 def send_message(level='public'):  # 推送消息
 
@@ -95,10 +120,18 @@ def new_message(message, level='public', ): # 得到新的消息
 def new_client(client, server):  # 建立一个新连接
 	pass
 
+
 def client_left(client, server):  # 关闭一个连接
-	if client['id'] in verifiedList:
-		verifiedList.remove(client["id"])
-		logger.info("用户断开连接(id: {})".format(client['id']))
+	if client['id'] in PrivateList:
+		PrivateList.remove(client["id"])
+		logger.info("私人断开连接(id: {}, 当前用户: {})".format(client['id'], [client_i['id'] for client_i in PrivateList]))
+
+	elif client['id'] in ProtecteList:
+		ProtecteList.remove(client["id"])
+		logger.info("朋友断开连接(id: {})".format(client['id']))
+	elif client['id'] in PublicList:
+		PublicList.remove(client["id"])
+		logger.info("公共订阅断开连接(id: {})".format(client['id']))
 
 
 def message_received(client, server, message):  # 接受消息
@@ -116,7 +149,7 @@ def message_received(client, server, message):  # 接受消息
 				user_auth = UserAuthentication()
 				if user_auth.rsa(message['info']['password']):  # 对进行私钥的验证
 					PrivateList.append(client)
-					logger.info("加入新的私人推送客户端(id: {})".format(client['id']))
+					logger.info("加入新的私人推送客户端(id: {},当前用户: {})".format(client['id'], [client_i['id'] for client_i in PrivateList]))
 					server.send_message(client, json.dumps({"message": "连接建立成功"}))
 					send_message('private')  # 推送历史消息
 
@@ -134,8 +167,6 @@ def message_received(client, server, message):  # 接受消息
 				send_message()  # 推送历史消息
 	except:
 			pass
-
-
 
 server = WebsocketServer(port=PORT, host=HOST)
 server.set_fn_new_client(new_client)
