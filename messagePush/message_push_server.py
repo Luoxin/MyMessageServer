@@ -34,36 +34,49 @@ def send_message_to_public(message):  # 给所有的公用订阅推送消息
 		server.send_message(client, json.dumps(message))
 
 def send_message(level='public'):  # 推送消息
-
 	if level == 'private':
 		if PrivateList.__len__() > 0 :  # 如果存在私人的客户端，则往私人消息中推送信息
-			if PrivateMessage.__len__() > 0:  # 如果存在私人的消息队列
-				while PrivateMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
-					message = PrivateMessage.pop(0)
-					send_message_to_private(message)
+			while PrivateMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
+				message = PrivateMessage.pop(0)
+				send_message_to_private(message)
 
 	elif level == 'protecte':
-		if ProtecteList.__len__() > 0 or PrivateList.__len__() > 0:   # 如果存在朋友的客户端，则往朋友消息中推送信息
-			if ProtecteMessage.__len__() > 0 or PrivateMessage.__len__() > 0:  # 如果存在朋友的客户端，则往朋友消息中推送信息
-				while ProtecteMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
-					message = ProtecteMessage.pop(0)
-					send_message_to_private(message)
-					send_message_to_protecte(message)
+		if ProtecteList.__len__() > 0:   # 如果存在朋友的客户端，则往朋友消息中推送信息
+			while ProtecteMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
+				message = ProtecteMessage.pop(0)
+				send_message_to_protecte(message)
 
 	elif level == 'public':
-		if PublicList.__len__() > 0 or ProtecteList.__len__() > 0 or PrivateList.__len__() > 0:   # 如果存在公用订阅的客户端，则往公用订阅消息中推送信息
-			if PublicMessage.__len__() > 0 or PrivateMessage.__len__() > 0 or ProtecteMessage.__len__() > 0:  # 如果存在公用订阅的客户端，则往公用订阅消息中推送信息
-				while PublicMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
-					message = PublicMessage.pop(0)
-					send_message_to_private(message)
-					send_message_to_protecte(message)
-					send_message_to_public(message)
+		if PublicList.__len__() > 0:   # 如果存在公用订阅的客户端，则往公用订阅消息中推送信息
+			while PublicMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
+				message = PublicMessage.pop(0)
+				send_message_to_public(message)
 
 
 
+def new_message(message, level='public', ): # 得到新的消息
+	'''
+	如果长度过大，则清理内存
+	:param level:
+	:param message:
+	:return:
+	'''
+	if level in ['private', 'protecte', 'public']:  # 个人接受所有消息
+		if PrivateMessage.__len__() > 200:
+			PrivateMessage.pop(0)
+		PrivateMessage.append(message)
 
+	if level in ['protecte', 'public']:  # 朋友接受部分消息
+		if PrivateMessage.__len__() > 100:
+			ProtecteMessage.pop(0)
+		ProtecteMessage.append(message)
 
+	if level in ['public']:  # 公共接受公共消息
+		if PrivateMessage.__len__() > 50:
+			PublicMessage.pop(0)
+		PublicMessage.append(message)
 
+	send_message(level)
 
 
 # websocket相关代码
@@ -80,8 +93,7 @@ def message_received(client, server, message):  # 接受消息
 	try:
 		message = json.loads(message)
 		if message["type"] == "message":  # 新的消息
-			eval(string.capwords(message['level']) + 'Message').append(message["info"])  # 将消息发送给响应的权限队列
-			send_message(message['level'])
+			new_message(level=message['level'], message=message['info'])
 
 		elif message["type"] == "subscription":  # 新的用户订阅
 			'''
