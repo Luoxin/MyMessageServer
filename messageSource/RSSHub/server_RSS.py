@@ -51,10 +51,9 @@ class RSS:
             self.controller[key] = Controller()
 
         while True:
+            logger.info("一次新的消息获取推送")
             self.dispatch()  # 总体调度
-            time.sleep(10 * 60)
-
-
+            time.sleep(30)
 
     def dispatch(self):
         for key, value in RSSLIST.items():
@@ -76,6 +75,7 @@ class RSS:
                             # break
 
             finally:
+                logger.info("{} 的新消息推送完毕".format(key))
                 self.controller[key].update_index()
 
 

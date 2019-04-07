@@ -30,6 +30,7 @@ NewFriend = '''Nice to meet you!{}'''.format(LITTLETAIL)
 # 无趣的在
 Ignore_zai = '''不在，有事说事，我会把消息推送给小主人的。{}'''.format(LITTLETAIL)
 
+# 爱你
 
 # 时间戳转换为时间
 def ts_to_datatime(ts):
@@ -56,6 +57,8 @@ def text_reply(msg):
             messgae = msg.text
             if messgae in ["在", "在不在", "在？", "在不在？", "在吗", "在吗？", "在嘛", "在么", "在嘛?", "在么?"]:
                 msg.user.send(Ignore_zai)
+            elif ("爱你" in messgae) or ("喜欢你" in messgae):
+                msg.user.send(Ignore_zai)
             else:
                 messgae = {
                     "type": "message",
@@ -69,7 +72,7 @@ def text_reply(msg):
                     }
                 }
                 send_messagr(messgae)
-
+                logger.info("收到 {} 发送的消息".format(msg.user["RemarkName"]))
     except:
         pass
 

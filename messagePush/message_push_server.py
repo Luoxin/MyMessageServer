@@ -34,20 +34,28 @@ def send_message_to_public(message):  # 给所有的公用订阅推送消息
 		server.send_message(client, json.dumps(message))
 
 def send_message(level='public'):  # 推送消息
-	if level == 'private':
+
+	logger.debug(level)
+	logger.debug(PrivateMessage)
+	logger.debug(ProtecteMessage)
+	logger.debug(PublicMessage)
+	if level in ['private', 'protecte', 'public']:  # 个人接受所有消息
 		if PrivateList.__len__() > 0 :  # 如果存在私人的客户端，则往私人消息中推送信息
+			logger.debug("发送新消息给private")
 			while PrivateMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
 				message = PrivateMessage.pop(0)
 				send_message_to_private(message)
 
-	elif level == 'protecte':
-		if ProtecteList.__len__() > 0:   # 如果存在朋友的客户端，则往朋友消息中推送信息
+	if level in ['protecte', 'public']:  # 朋友接受部分消息
+		if ProtecteList.__len__() > 0 :   # 如果存在朋友的客户端，则往朋友消息中推送信息
+			logger.debug("发送新消息给protecte")
 			while ProtecteMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
 				message = ProtecteMessage.pop(0)
 				send_message_to_protecte(message)
 
-	elif level == 'public':
+	if level in ['public']:  # 公共接受公共消息
 		if PublicList.__len__() > 0:   # 如果存在公用订阅的客户端，则往公用订阅消息中推送信息
+			logger.debug("发送新消息给public")
 			while PublicMessage.__len__() != 0:  # 推送消息直到没有未推送的消息位置
 				message = PublicMessage.pop(0)
 				send_message_to_public(message)
@@ -63,19 +71,23 @@ def new_message(message, level='public', ): # 得到新的消息
 	'''
 	if level in ['private', 'protecte', 'public']:  # 个人接受所有消息
 		if PrivateMessage.__len__() > 200:
+			logger.info("private消息队列已满")
 			PrivateMessage.pop(0)
 		PrivateMessage.append(message)
 
 	if level in ['protecte', 'public']:  # 朋友接受部分消息
 		if PrivateMessage.__len__() > 100:
+			logger.info("protecte消息队列已满")
 			ProtecteMessage.pop(0)
 		ProtecteMessage.append(message)
 
 	if level in ['public']:  # 公共接受公共消息
 		if PrivateMessage.__len__() > 50:
+			logger.info("public消息队列已满")
 			PublicMessage.pop(0)
 		PublicMessage.append(message)
 
+	logger.info("接收到新的消息  {}".format(message))
 	send_message(level)
 
 
@@ -93,16 +105,15 @@ def message_received(client, server, message):  # 接受消息
 	try:
 		message = json.loads(message)
 		if message["type"] == "message":  # 新的消息
-			new_message(level=message['level'], message=message['info'])
+			new_message(message['info'], level=message['level'])
+
 
 		elif message["type"] == "subscription":  # 新的用户订阅
 			'''
 			- 验证用户身份
 			'''
-			# print(message["info"])
-			user_auth = UserAuthentication()
-
 			if message['info']["username"] == 'private':  # 私人的订阅(用户的微信等敏感信息)
+				user_auth = UserAuthentication()
 				if user_auth.rsa(message['info']['password']):  # 对进行私钥的验证
 					PrivateList.append(client)
 					logger.info("加入新的私人推送客户端(id: {})".format(client['id']))
