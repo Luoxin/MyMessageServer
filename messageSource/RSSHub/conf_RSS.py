@@ -6,17 +6,17 @@ BASE_PROXY_URL = " https://rsshub.app/"  # 一些需要翻墙的站点的,或需
 
 
 RSSLIST = {
-    "果壳网科学人":{
-        'base_url': BASE_URL,
-        'url_routing':  "/guokr/scientific",
-        'analyze_rule': {
-            "标题": "//rss/channel/item/title/text()",
-            "简介": "//rss/channel/item/description/text()",
-            "发布时间": "//rss/channel/item/pubDate/text()",
-            "详情地址": "//rss/channel/item/link/text()",
-            "id": "//rss/channel/item/guid/text()"
-        }
-    },
+    # "果壳网科学人":{
+    #     'base_url': BASE_URL,
+    #     'url_routing':  "/guokr/scientific",
+    #     'analyze_rule': {
+    #         "标题": "//rss/channel/item/title/text()",
+    #         "简介": "//rss/channel/item/description/text()",
+    #         "发布时间": "//rss/channel/item/pubDate/text()",
+    #         "详情地址": "//rss/channel/item/link/text()",
+    #         "id": "//rss/channel/item/guid/text()"
+    #     }
+    # },
     "广州市停水":{
         'base_url': BASE_URL,
         'url_routing':  "tingshuitz/guangzhou",
@@ -70,17 +70,17 @@ RSSLIST = {
             "id": "//rss/channel/item/guid/text()"
         }
     },
-    "知乎热榜":{
-        'base_url': BASE_URL,
-        'url_routing':  "/zhihu/hotlist",
-        'analyze_rule': {
-            "标题": "//rss/channel/item/title/text()",
-            "简介": "//rss/channel/item/description/text()",
-            "发布时间": "//rss/channel/item/pubDate/text()",
-            "详情地址": "//rss/channel/item/link/text()",
-            "id": "//rss/channel/item/guid/text()"
-        }
-    },
+    # "知乎热榜":{
+    #     'base_url': BASE_URL,
+    #     'url_routing':  "/zhihu/hotlist",
+    #     'analyze_rule': {
+    #         "标题": "//rss/channel/item/title/text()",
+    #         "简介": "//rss/channel/item/description/text()",
+    #         "发布时间": "//rss/channel/item/pubDate/text()",
+    #         "详情地址": "//rss/channel/item/link/text()",
+    #         "id": "//rss/channel/item/guid/text()"
+    #     }
+    # },
     "豆瓣-正在上映的电影":{
         'base_url': BASE_URL,
         'url_routing':  "/douban/movie/playing",
@@ -91,15 +91,15 @@ RSSLIST = {
             "id": "//rss/channel/item/guid/text()"
         }
     },
-    "InfoQ推荐":{
-        'base_url': BASE_URL,
-        'url_routing':  "/infoq/recommend",
-        'analyze_rule': {
-            "标题": "//rss/channel/item/title/text()",
-            "简介": "//rss/channel/item/description/text()",
-            "发布时间": "//rss/channel/item/pubDate/text()",
-            "详情地址": "//rss/channel/item/link/text()",
-            "id": "//rss/channel/item/guid/text()"
-        }
-    },
+    # "InfoQ推荐":{
+    #     'base_url': BASE_URL,
+    #     'url_routing':  "/infoq/recommend",
+    #     'analyze_rule': {
+    #         "标题": "//rss/channel/item/title/text()",
+    #         "简介": "//rss/channel/item/description/text()",
+    #         "发布时间": "//rss/channel/item/pubDate/text()",
+    #         "详情地址": "//rss/channel/item/link/text()",
+    #         "id": "//rss/channel/item/guid/text()"
+    #     }
+    # },
 }
