@@ -2,6 +2,8 @@ import sys
 sys.path.append('../')
 sys.path.append('../../')
 
+from log import logger
+
 import time
 from urllib.parse import urljoin
 from download_html import DownLoaderHtml
@@ -56,7 +58,6 @@ class RSS:
 
     def dispatch(self):
         for key, value in RSSLIST.items():
-            # print(key)
             try:
                 rss_message = self.get_data(value["base_url"], value['url_routing'], value['analyze_rule'])
                 if rss_message:
@@ -82,7 +83,6 @@ class RSS:
         try:
             url = urljoin(base_url, url_routing)
             xml_content = self.download.download_html(url)
-
             analyze_rule["reorganization"] = list(analyze_rule.keys())
 
             status, result = self.analyze.parse_xpath_xml(xml_content, analyze_rule)
