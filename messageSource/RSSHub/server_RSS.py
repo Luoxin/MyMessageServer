@@ -1,3 +1,7 @@
+import sys
+sys.path.append('../')
+sys.path.append('../../')
+
 import time
 from urllib.parse import urljoin
 from download_html import DownLoaderHtml
