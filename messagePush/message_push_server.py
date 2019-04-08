@@ -96,23 +96,23 @@ def new_message(message, level='public', ): # 得到新的消息
 	'''
 	if level in ['private', 'protecte', 'public']:  # 个人接受所有消息
 		if PrivateMessage.__len__() > 200:
-			logger.info("private消息队列已满")
+			logger.debug("private消息队列已满")
 			PrivateMessage.pop(0)
 		PrivateMessage.append(message)
 
 	if level in ['protecte', 'public']:  # 朋友接受部分消息
 		if PrivateMessage.__len__() > 100:
-			logger.info("protecte消息队列已满")
+			logger.debug("protecte消息队列已满")
 			ProtecteMessage.pop(0)
 		ProtecteMessage.append(message)
 
 	if level in ['public']:  # 公共接受公共消息
 		if PrivateMessage.__len__() > 50:
-			logger.info("public消息队列已满")
+			logger.debug("public消息队列已满")
 			PublicMessage.pop(0)
 		PublicMessage.append(message)
 
-	logger.info("接收到新的消息  {}".format(message))
+	logger.debug("接收到新的消息  {}".format(message))
 	send_message(level)
 
 
@@ -149,7 +149,7 @@ def message_received(client, server, message):  # 接受消息
 				user_auth = UserAuthentication()
 				if user_auth.rsa(message['info']['password']):  # 对进行私钥的验证
 					PrivateList.append(client)
-					logger.info("加入新的私人推送客户端(id: {},当前用户: {})".format(client['id'], [client_i['id'] for client_i in PrivateList]))
+					logger.info("加入新的私人推送客户端(id: {},当前用户: {}, 积累的的消息已有 {})".format(client['id'], [client_i['id'] for client_i in PrivateList], PrivateMessage.__len__()))
 					server.send_message(client, json.dumps({"message": "连接建立成功"}))
 					send_message('private')  # 推送历史消息
 
