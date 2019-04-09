@@ -16,6 +16,21 @@ import string
 
 # 消息相关的代码
 
+MessageCache = {
+    'private': {
+        'userlist': [],
+        'message': []
+    },
+    'protecte':{
+        'userlist': [],
+        'message': []
+    },
+    'public': {
+        'userlist': [],
+        'message': []
+    },
+}
+
 PrivateList = []  # 私人用户的列表
 PrivateMessage = []
 
@@ -148,7 +163,7 @@ def message_received(client, server, message):  # 接受消息
 			if message['info']["username"] == 'private':  # 私人的订阅(用户的微信等敏感信息)
 				user_auth = UserAuthentication()
 				if user_auth.rsa(message['info']['password']):  # 对进行私钥的验证
-					PrivateList.append(client)
+					MessageCache['private']['userlist'].append(client)
 					logger.info("加入新的私人推送客户端(id: {},当前用户: {}, 积累的的消息已有 {})".format(client['id'], [client_i['id'] for client_i in PrivateList], PrivateMessage.__len__()))
 					server.send_message(client, json.dumps({"message": "连接建立成功"}))
 					send_message('private')  # 推送历史消息
