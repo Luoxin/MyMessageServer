@@ -18,8 +18,18 @@ def send_messagr(message):  # 将消息推送给消息推送
     ws.send(json.dumps(message))
     ws.close()
 
+# 时间戳转换为时间
+def ts_to_datatime(ts):
+    tl = time.localtime(float(ts))
+    format_time = time.strftime("%Y-%m-%d %H:%M:%S", tl)
+    return format_time
+
 
 # 自动回复
+
+# 获取版本信息
+temp_time = ts_to_datatime(time.time())
+Version = '''当前的代码更新时间为  {}  , 当前程序启动时间为  {}{}'''.format('2019-4-8 12:10', temp_time, LITTLETAIL)
 
 # 无法处理的消息
 VideoReply = '''检测到您发送的是媒体文件(非文字)，如若有急事，人工转换成文字再发送。{}'''.format(LITTLETAIL)
@@ -35,14 +45,6 @@ Love_you = '''我也爱你(๑′ᴗ‵๑)Ｉ Lᵒᵛᵉᵧₒᵤ❤，超爱�
 
 # 喜欢你
 Like_you = '''❤我也超级超级超级喜欢你❤'''
-
-# 时间戳转换为时间
-def ts_to_datatime(ts):
-    tl = time.localtime(float(ts))
-    format_time = time.strftime("%Y-%m-%d %H:%M:%S", tl)
-    return format_time
-
-
 
 
 
@@ -92,6 +94,8 @@ def text_reply(msg):
                 }
                 send_messagr(messgae)
                 logger.info("收到 {} 的告白".format(msg.user["RemarkName"]))
+            elif messgae in ["版本", "v", "version"]:
+                msg.user.send(Version)
             else:
                 messgae = {
                     "type": "message",
@@ -109,9 +113,9 @@ def text_reply(msg):
     except:
         pass
 
-@itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO])
-def video_reply(msg):
-    msg.user.send(VideoReply)
+# @itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO])
+# def video_reply(msg):
+    # msg.user.send(VideoReply)
 
 
 # @itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO])
