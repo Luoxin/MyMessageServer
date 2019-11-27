@@ -2,7 +2,7 @@ import sys
 sys.path.append('../')
 sys.path.append('../../')
 
-from log import logger
+from utensil import logger
 
 import urllib.request
 from contextlib import closing

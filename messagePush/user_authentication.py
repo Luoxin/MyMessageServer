@@ -3,8 +3,8 @@ import os
 import sys
 sys.path.append('../')
 
-from log import logger
-from conf import *
+from utensil import logger
+from .conf import *
 from utensil.secret import Secret
 
 

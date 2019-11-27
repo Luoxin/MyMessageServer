@@ -6,11 +6,11 @@ sys.path.append('../../')
 import time
 import json
 
-from log import logger
+from utensil import logger
 
 import itchat
 from itchat.content import *
-from conf import *
+from .conf import *
 from websocket import create_connection
 
 def send_messagr(message):  # 将消息推送给消息推送

@@ -6,7 +6,7 @@ import traceback
 from lxml import etree
 
 from urllib.parse import urljoin  # url拼接
-# from log import logger  # 日志
+from utensil import logger
 # from utensil.tool import *  # 常用小工具
 
 

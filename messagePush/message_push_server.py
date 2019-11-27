@@ -1,10 +1,10 @@
 import sys
 sys.path.append('../')
-from log import logger
+from utensil import logger
 
-from user_authentication import UserAuthentication
+from .user_authentication import UserAuthentication
 from websocket_server import WebsocketServer
-from conf import *
+from .conf import *
 import json
 import string
 
