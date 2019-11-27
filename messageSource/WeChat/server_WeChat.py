@@ -3,26 +3,25 @@ import sys
 sys.path.append("../")
 sys.path.append("../../")
 
-
 import time
 import json
+import itchat
 
 from utensil import logger
 
-import itchat
 from itchat.content import *
 from .conf import *
 from websocket import create_connection
 
 
-def send_messagr(message):  # 将消息推送给消息推送
+def send_message(message):  # 将消息推送给消息推送
     ws = create_connection("ws://{}:{}".format(SERVERHOST, SERVERPORT))
     ws.send(json.dumps(message))
     ws.close()
 
 
 # 时间戳转换为时间
-def ts_to_datatime(ts):
+def ts_to_datetime(ts):
     tl = time.localtime(float(ts))
     format_time = time.strftime("%Y-%m-%d %H:%M:%S", tl)
     return format_time
@@ -31,7 +30,7 @@ def ts_to_datatime(ts):
 # 自动回复
 
 # 获取版本信息
-temp_time = ts_to_datatime(time.time())
+temp_time = ts_to_datetime(time.time())
 Version = """当前的代码更新时间为  {}  , 当前程序启动时间为  {}{}""".format(
     "2019-4-8 12:10", temp_time, LITTLETAIL
 )
@@ -50,7 +49,6 @@ Love_you = """我也爱你(๑′ᴗ‵๑)Ｉ Lᵒᵛᵉᵧₒᵤ❤，超爱�
 
 # 喜欢你
 Like_you = """❤我也超级超级超级喜欢你❤"""
-
 
 # 机器人部分
 itchat.auto_login(hotReload=True, enableCmdQR=False)
@@ -94,7 +92,7 @@ def text_reply(msg):
                         "Time": msg["CreateTime"],
                     },
                 }
-                send_messagr(messgae)
+                send_message(messgae)
                 logger.info("收到 {} 的告白".format(msg.user["RemarkName"]))
 
             elif "喜欢你" in messgae:
@@ -113,7 +111,7 @@ def text_reply(msg):
                         "Time": msg["CreateTime"],
                     },
                 }
-                send_messagr(messgae)
+                send_message(messgae)
                 logger.info("收到 {} 的告白".format(msg.user["RemarkName"]))
             elif messgae in ["版本", "v", "version"]:
                 msg.user.send(Version)
@@ -132,7 +130,7 @@ def text_reply(msg):
                         "Time": msg["CreateTime"],
                     },
                 }
-                send_messagr(messgae)
+                send_message(messgae)
                 logger.info("收到 {} 发送的消息".format(msg.user["RemarkName"]))
     except:
         pass
@@ -178,7 +176,7 @@ def text_reply(msg):
                         "Time": msg["CreateTime"],
                     },
                 }
-                send_messagr(messgae)
+                send_message(messgae)
 
 
 itchat.run(True)
