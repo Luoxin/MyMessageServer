@@ -1,6 +1,7 @@
 import sys
-sys.path.append('../')
-sys.path.append('../../')
+
+sys.path.append("../")
+sys.path.append("../../")
 
 from utensil import logger
 
@@ -21,11 +22,11 @@ def send_messagr(message):
     except:
         pass
 
+
 class Controller:
     def __init__(self):
         self.backup = set()
         self.current = set()
-
 
     def update_list(self, id):  # 更新新的列表
         self.current.add(id)
@@ -58,16 +59,18 @@ class RSS:
     def dispatch(self):
         for key, value in RSSLIST.items():
             try:
-                rss_message = self.get_data(value["base_url"], value['url_routing'], value['analyze_rule'])
+                rss_message = self.get_data(
+                    value["base_url"], value["url_routing"], value["analyze_rule"]
+                )
                 if rss_message:
                     for message in rss_message:
                         if self.controller[key].update_list(message["id"]):
                             temp = message
                             temp["消息来源"] = key
                             message_send = {
-                                'type': "message",
-                                'level': 'protecte',
-                                "info": temp
+                                "type": "message",
+                                "level": "protecte",
+                                "info": temp,
                             }
                             send_messagr(message_send)  # 获取到消息后发送到服务端并停止30秒
                             time.sleep(30)
@@ -77,7 +80,6 @@ class RSS:
             finally:
                 logger.info("{} 的新消息推送完毕".format(key))
                 self.controller[key].update_index()
-
 
     def get_data(self, base_url, url_routing, analyze_rule):
         try:
@@ -94,11 +96,6 @@ class RSS:
             return False
 
 
-
-
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Controller()
     RSS()

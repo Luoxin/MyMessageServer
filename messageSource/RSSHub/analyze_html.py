@@ -1,21 +1,21 @@
-'''
+"""
 
-'''
+"""
 import re
 import traceback
 from lxml import etree
 
 from urllib.parse import urljoin  # url拼接
 from utensil import logger
-# from utensil.tool import *  # 常用小工具
 
+# from utensil.tool import *  # 常用小工具
 
 
 class AnalyzeHtml:
     def __init__(self, sid=0, aid=0):
         self.sid = sid
         self.aid = aid
-        self.aftercare = ["reorganization", "exUrl"]   # 结尾处理
+        self.aftercare = ["reorganization", "exUrl"]  # 结尾处理
 
     def set_basic_information(self, sid, aid):  # 设置基础配置信息
         self.set_sid(sid)
@@ -28,13 +28,12 @@ class AnalyzeHtml:
         self.aid = aid
 
     def parse_xpath_xml(self, html_content, xpath_dict):  # 利用xpath解析html页面
-        '''
+        """
         :param html_content: 页面内容
         :param xpath_dict: xpath
         :return:
-        '''
-        html_content = bytes(bytearray(html_content, encoding='utf-8'))  # 预处理避免编码错误
-
+        """
+        html_content = bytes(bytearray(html_content, encoding="utf-8"))  # 预处理避免编码错误
 
         soup = etree.XML(html_content)
         status, result_dict = self.xpath_analyze(xpath_dict, soup)  # 进行xpath解析的主要函数
@@ -43,7 +42,9 @@ class AnalyzeHtml:
 
         if status:  # 解析完成进行下一步
             if "reorganization" in xpath_dict:  # 存在需要重组的字段，则执行重组
-                result_dict = self.xpath_aftercare_reorganization_main(xpath_dict, result_dict)
+                result_dict = self.xpath_aftercare_reorganization_main(
+                    xpath_dict, result_dict
+                )
             if "exUrl" in xpath_dict:  # 存在扩链的字段
                 result_dict = self.xpath_aftercare_exurl_main(xpath_dict, result_dict)
 
@@ -53,13 +54,12 @@ class AnalyzeHtml:
             return (status, result_dict)
 
     def parse_xpath_html(self, html_content, xpath_dict):  # 利用xpath解析html页面
-        '''
+        """
         :param html_content: 页面内容
         :param xpath_dict: xpath
         :return:
-        '''
-        html_content = bytes(bytearray(html_content, encoding='utf-8'))  # 预处理避免编码错误
-
+        """
+        html_content = bytes(bytearray(html_content, encoding="utf-8"))  # 预处理避免编码错误
 
         soup = etree.HTML(html_content)
         status, result_dict = self.xpath_analyze(xpath_dict, soup)  # 进行xpath解析的主要函数
@@ -68,7 +68,9 @@ class AnalyzeHtml:
 
         if status:  # 解析完成进行下一步
             if "reorganization" in xpath_dict:  # 存在需要重组的字段，则执行重组
-                result_dict = self.xpath_aftercare_reorganization_main(xpath_dict, result_dict)
+                result_dict = self.xpath_aftercare_reorganization_main(
+                    xpath_dict, result_dict
+                )
             if "exUrl" in xpath_dict:  # 存在扩链的字段
                 result_dict = self.xpath_aftercare_exurl_main(xpath_dict, result_dict)
 
@@ -76,7 +78,6 @@ class AnalyzeHtml:
             return (status, result_dict)
         else:  # 解析失败，返回错误信息
             return (status, result_dict)
-
 
     def xpath_aftercare_exurl_main(self, xpath_dict, result_dict):  # 处理扩链信息
         exUrl = xpath_dict["exUrl"]
@@ -88,11 +89,11 @@ class AnalyzeHtml:
                         value = {
                             "aid": value,
                             "crawl_type": "html",
-                            'info_url': {
-                                'interval': 1,
-                                'download_type': 'html',
-                                'repeat_times': 1,
-                            }
+                            "info_url": {
+                                "interval": 1,
+                                "download_type": "html",
+                                "repeat_times": 1,
+                            },
                         }
                     elif isinstance(value, dict):  # 无需初始化的扩链信息
                         pass
@@ -120,40 +121,43 @@ class AnalyzeHtml:
         # else:
         #     value = False
         #     pass
-            # logger.warning("url格式不正确(sid: {},aid: {},url: {})".format(self.sid, self.aid, url))
+        # logger.warning("url格式不正确(sid: {},aid: {},url: {})".format(self.sid, self.aid, url))
         return value
 
     def xpath_aftercare_reorganization_main(self, xpath_dict, result_dict):
-        '''
+        """
         - 获取需要重组的字段名
         - 对每一个字段调用重组
         :param xpath_dict:
         :param result_dict:
         :return:
-        '''
+        """
         reorganization = xpath_dict["reorganization"]
         result_dict["reorganization"] = []
         if isinstance(reorganization, list):  # 如果是列表，格式正确
             if isinstance(reorganization[0], str):  # 直接对数据进行合并
-                result_dict = self.xpath_aftercare_reorganization_one(result_dict, reorganization)
+                result_dict = self.xpath_aftercare_reorganization_one(
+                    result_dict, reorganization
+                )
             else:  # 如果第一个值为字符串，说明有多个需要合并的字段
                 for value in reorganization:  # 对每一对都进行合并
-                    result_dict = self.xpath_aftercare_reorganization_one(result_dict, value)
+                    result_dict = self.xpath_aftercare_reorganization_one(
+                        result_dict, value
+                    )
         else:
             pass
             # logger.warning("'reorganization'字段类型有误(sid: {}, aid: {})".format(self.sid, self.aid))
         return result_dict
 
-
     def xpath_aftercare_reorganization_one(self, result_dict, keyword):  # 根据关键字重组部分字段
-        '''
+        """
         - 测试长度是否匹配
         - 重组数据
         - 数据格式转换
         :param result_dict:
         :param keyword:
         :return:
-        '''
+        """
         try:
             all_len = result_dict[keyword[0]].__len__()
             temp_data = []
@@ -176,7 +180,6 @@ class AnalyzeHtml:
         except:
             return result_dict
 
-
     def xpath_analyze(self, xpath_dict, soup):  # 根据xpath解析网页
         result_dict = {}
         try:
@@ -189,17 +192,29 @@ class AnalyzeHtml:
                     if "type" in value:
                         if value["type"] == "intercept":  # 截取部分数据
                             result_dict[key] = []
-                            for __, data in enumerate(soup.xpath(value["xpath"])):  # 对每一个数据都进行阶段
+                            for __, data in enumerate(
+                                soup.xpath(value["xpath"])
+                            ):  # 对每一个数据都进行阶段
                                 if value["intercept"].__len__() == 1:  # 只有一个截取参数
-                                    result_dict[key].append(data[value["intercept"][0]:])
+                                    result_dict[key].append(
+                                        data[value["intercept"][0] :]
+                                    )
                                 elif value["intercept"].__len__() == 2:  # 存在两个截取参数
-                                    result_dict[key].append(data[value["intercept"][0]: value["intercept"][1]])
+                                    result_dict[key].append(
+                                        data[
+                                            value["intercept"][0] : value["intercept"][
+                                                1
+                                            ]
+                                        ]
+                                    )
                                 else:
                                     pass
                                     # logger.error("xpath截取参数有误 (sid: {}, aid: {}, key: {})".format(self.sid, self.aid, key))
                         elif value["type"] == "splice":  # url拼接
                             result_dict[key] = []
-                            for __, data in enumerate(soup.xpath(value["xpath"])):  # 对每一个数据都进行阶段
+                            for __, data in enumerate(
+                                soup.xpath(value["xpath"])
+                            ):  # 对每一个数据都进行阶段
                                 result_dict[key].append(urljoin(value["splice"], data))
                         else:
                             pass
