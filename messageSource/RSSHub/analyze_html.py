@@ -1,7 +1,3 @@
-"""
-
-"""
-import re
 import traceback
 from lxml import etree
 
@@ -49,9 +45,9 @@ class AnalyzeHtml:
                 result_dict = self.xpath_aftercare_exurl_main(xpath_dict, result_dict)
 
             # logger.debug(result_dict)
-            return (status, result_dict)
+            return status, result_dict
         else:  # 解析失败，返回错误信息
-            return (status, result_dict)
+            return status, result_dict
 
     def parse_xpath_html(self, html_content, xpath_dict):  # 利用xpath解析html页面
         """
