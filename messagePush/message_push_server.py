@@ -14,9 +14,11 @@ def set_fn_client_left(client, server):
 
 
 def set_fn_message_received(client, server, message):
+    print(message)
     pass
 
-ws = WebsocketServer(1802, host="127.0.0.1")
+
+ws = WebsocketServer(1802)
 ws.set_fn_new_client(new_client)
 ws.set_fn_message_received(set_fn_message_received)
 ws.set_fn_client_left(set_fn_client_left)

@@ -6,6 +6,7 @@ import struct
 import traceback
 from base64 import b64encode
 from hashlib import sha1
+from utensil.instrument import Instrument
 
 from utensil import logger
 
@@ -47,7 +48,13 @@ CLOSE_CONN = 0x8
 class API:
     def run_forever(self):
         try:
-            logger.info("websocket server is running in {}".format(self.port))
+            host = self.host
+            if host == "0.0.0.0":
+                try:
+                    host = Instrument.get_extra_net_ip()
+                except:
+                    logger.error(traceback.format_exc())
+            logger.info("websocket server is running in ws://{}:{}".format(host, self.port))
             self.serve_forever()
         except KeyboardInterrupt:
             self.server_close()
@@ -99,8 +106,9 @@ class WebsocketServer(ThreadingMixIn, TCPServer, API):
     clients = []
     id_counter = 0
 
-    def __init__(self, port, host="127.0.0.1"):
+    def __init__(self, port, host="0.0.0.0"):
         self.port = port
+        self.host = host
         TCPServer.__init__(self, (host, port), WebSocketHandler)
 
     def _message_received_(self, handler, msg):
