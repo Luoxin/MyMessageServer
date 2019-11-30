@@ -1,4 +1,5 @@
 import json
+import re
 import socket
 import traceback
 import uuid as uu
@@ -45,3 +46,11 @@ class Instrument:
             logger.error(traceback.format_exc())
 
         return extra_net_ip
+
+    @staticmethod
+    def is_url(url):  # 判断是否为一个标准的url格式
+        pattern_url = re.compile(r'((http)/(https)|(ws)/(wss)/(ftp)/(ssh)/(sftp)):\/\/[^\s]*')
+        if pattern_url.search(url):
+            return True
+        else:
+            return False
